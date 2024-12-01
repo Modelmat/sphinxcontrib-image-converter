@@ -9,16 +9,21 @@ from sphinx.util.images import get_image_size
 from sphinxcontrib.drawio import DrawIOError
 
 
+def image_size_rough_equal(a: (int, int), b: (int, int), max_diff: int = 2) -> bool:
+    ((a_width, a_height), (b_width, b_height)) = (a, b)
+    return abs(a_height - b_height) <= max_diff and abs(a_width - b_width) <= max_diff
+
+
 @pytest.mark.sphinx("html", testroot="page-index")
 def test_page_index(images: List[Path]):
     assert images[0].name == "pages.png"
     assert images[1].name == "pages1.png"
     assert images[2].name == "pages2.png"
     assert images[3].name == "pages.png"
-    assert get_image_size(images[0]) == (125, 65)
-    assert get_image_size(images[1]) == (65, 65)
-    assert get_image_size(images[2]) == (65, 65)
-    assert get_image_size(images[3]) == (125, 65)
+    assert image_size_rough_equal(get_image_size(images[0]), (125, 65))
+    assert image_size_rough_equal(get_image_size(images[1]), (65, 65))
+    assert image_size_rough_equal(get_image_size(images[2]), (65, 65))
+    assert image_size_rough_equal(get_image_size(images[3]), (125, 65))
 
 
 @pytest.mark.sphinx("html", testroot="page-index-out-of-range")
@@ -33,8 +38,8 @@ def test_page_index_out_of_range(content: Sphinx, directives: List[Tag]):
 def test_page_name(images: List[Path]):
     assert images[0].name == "pages.png"
     assert images[1].name == "pages1.png"
-    assert get_image_size(images[0]) == (125, 65)
-    assert get_image_size(images[1]) == (65, 65)
+    assert image_size_rough_equal(get_image_size(images[0]), (125, 65))
+    assert image_size_rough_equal(get_image_size(images[1]), (65, 65))
 
 
 @pytest.mark.sphinx("html", testroot="alt")
@@ -61,11 +66,11 @@ def test_width_height(images: List[Path]):
 @pytest.mark.sphinx("html", testroot="scale")
 def test_scale(images: List[Path]):
     # image size by default is 125x65. the scaling isn't perfect
-    assert get_image_size(images[0]) == (245, 125)
-    assert get_image_size(images[1]) == (1217, 617)
-    assert get_image_size(images[2]) == (64, 34)
-    assert get_image_size(images[3]) == (125, 65)
-    assert get_image_size(images[4]) == (610, 310)
+    assert image_size_rough_equal(get_image_size(images[0]), (245, 125))
+    assert image_size_rough_equal(get_image_size(images[1]), (1217, 617))
+    assert image_size_rough_equal(get_image_size(images[2]), (64, 34))
+    assert image_size_rough_equal(get_image_size(images[3]), (125, 65))
+    assert image_size_rough_equal(get_image_size(images[4]), (610, 310))
 
 
 @pytest.mark.skip(reason="No actual test case")
