@@ -36,6 +36,7 @@ VALID_OUTPUT_FORMATS = {
     "pdf": "application/pdf",
 }
 
+VALID_SVG_THEMES = ['auto', 'light', 'dark']
 
 def is_headless(config: Config):
     if config.drawio_headless == "auto":
@@ -56,6 +57,8 @@ class DrawIOError(SphinxError):
 def format_spec(argument: Any) -> str:
     return directives.choice(argument, list(VALID_OUTPUT_FORMATS.keys()))
 
+def svg_theme_spec(argument: Any) -> str:
+    return directives.choice(argument, VALID_SVG_THEMES)
 
 def is_valid_format(format: str, builder: Builder) -> str:
     mimetype = VALID_OUTPUT_FORMATS.get(format, None)
@@ -97,6 +100,7 @@ class DrawIOBase(SphinxDirective):
         "export-width": directives.positive_int,
         "export-height": directives.positive_int,
         "layer-selection": directives.unchanged,
+        "svg-theme": svg_theme_spec,
     }
 
     def run(self) -> List[Node]:
@@ -240,6 +244,7 @@ class DrawIOConverter(ImageConverter):
         disable_dev_shm_usage = builder.config.drawio_disable_dev_shm_usage
         disable_gpu = builder.config.drawio_disable_gpu
         no_sandbox = builder.config.drawio_no_sandbox
+        svg_theme = options.get("svg-theme", builder.config.drawio_default_svg_theme)
 
         # Any directive options which would change the output file would go here
         unique_values = (
@@ -338,6 +343,10 @@ class DrawIOConverter(ImageConverter):
         if no_sandbox:
             # This may be needed for docker support, and it has to be the last argument to work.
             drawio_args.append("--no-sandbox")
+
+        if svg_theme:
+            drawio_args.append("--svg-theme")
+            drawio_args.append(svg_theme)
 
         new_env = os.environ.copy()
         if builder.config._display:
@@ -446,6 +455,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     )
     app.add_config_value("drawio_disable_gpu", False, "html", ENUM(True, False))
     app.add_config_value("drawio_no_sandbox", False, "html", ENUM(True, False))
+    app.add_config_value("drawio_default_svg_theme", "auto", "html", ENUM(*VALID_SVG_THEMES))
 
     # Add CSS file to the HTML static path for add_css_file
     app.connect("build-finished", on_build_finished)
