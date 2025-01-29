@@ -147,6 +147,19 @@ This option may be needed to work in a docker container. You should probably
 only enable it if you are experiencing issues. See https://github.com/jgraph/drawio-desktop/issues/144 
 for more info. 
 
+### SVG theme
+- *Formal Name*: `drawio_default_svg_theme`
+- *Default Value*: `"auto"`
+- *Possible Values*: `"auto"`, `"light"`, `"dark"`
+
+This option controls the adaptive color theming for SVG files.
+When set to "auto", SVG files will be rendered with a color scheme that fits
+to the user's desktop theme: the SVG will be rendered with a dark/light color scheme
+when the desktop theme is set to a "dark"/"light" theme.
+In some cases, it might be desirable to force SVG files to always be rendered
+with "light" or "dark" color schemes. This can be done by setting this option
+to either value.
+
 ## Usage
 The extension can be used through the `drawio-image` directive. For example:
 ```
@@ -245,4 +258,13 @@ This option allows you to select one or more layers from a draw.io file to
 export. Note that draw.io uses 0 as the lowest layer, which is usually the
 *Background* layer.
 If not specified, all visible layers will be exported (draw.io binary functionality).
+
+### SVG theme
+- *Formal Name*: `:svg-theme:`
+- *Default Value*: `drawio_default_svg_theme` set in conf.py
+- *Possible Values*: `"auto"`, `"light"`, `"dark"`
+
+This changes the adaptive color scheming used when rendering SVG files.
+To make SVG files render according to the viewer's desktop theme, select `"auto"`.
+To force SVG files to be rendered with light/dark color schemes, select `"light"`/`"dark"`.
 

@@ -255,6 +255,7 @@ class DrawIOConverter(ImageConverter):
             str(layer_selection) if layer_selection else "",
             scale,
             "true" if transparent else "false",
+            svg_theme,
             *[str(options.get(option)) for option in OPTIONAL_UNIQUES],
         )
         hash_key = "\n".join(unique_values)
