@@ -3,7 +3,7 @@ from typing import List
 
 import pytest
 
-from bs4 import Tag
+from bs4 import BeautifulSoup, Tag
 from sphinx.application import Sphinx
 from sphinx.util.images import get_image_size
 from sphinxcontrib.drawio import DrawIOError
@@ -163,6 +163,20 @@ def test_layer_selection(images: List[Path]):
     assert get_image_size(images[3]) == (125, 215)
     assert get_image_size(images[4]) == (125, 125)
 
+@pytest.mark.sphinx("html", testroot="svg-theme")
+def test_svg_theme(images: List[Path]):
+    # Image settings:
+    #  index.rst image 1 (=auto)
+    #  index.rst image 2 (=light)
+    #  index.rst image 3 (=dark)
+    #  index.rst image 4 (=conf.py default setting, i.e. light)
+    expected_color_schemes = ["light dark", "light", "dark", "light"]
+
+    for i, image in enumerate(images):
+        content = image.read_text()
+        svg_tag = BeautifulSoup(content, 'xml').find('svg')
+        style_value = svg_tag['style']
+        assert f"color-scheme: {expected_color_schemes[i]};" in style_value
 
 @pytest.mark.sphinx("html", testroot="layer-not-exist")
 def test_layer_not_exist(app_with_local_user_config):
